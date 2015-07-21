@@ -180,9 +180,28 @@ public class NetworkClient : WebClient
         }
     }
 
+	public void UploadStr(string url,string data)
+	{
+        //Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+        Logger.WriteLine("UPLOADING");
+		UploadStringAsync(new System.Uri(url), data);
+	}
+
+	protected override void OnUploadStringCompleted (UploadStringCompletedEventArgs e)
+    {
+        Logger.WriteLine("UPLOAD COMPLETED");
+		base.OnUploadStringCompleted (e);
+        Logger.WriteLine("DATA: " + e.Result);
+	}
+    
+    protected override void OnUploadProgressChanged(UploadProgressChangedEventArgs e)
+    {
+        base.OnUploadProgressChanged(e);
+        Logger.WriteLine(e.TotalBytesToSend.ToString());
+    }
+
     ~NetworkClient()
     {
         this.CancelAsync();
     }
-
 }

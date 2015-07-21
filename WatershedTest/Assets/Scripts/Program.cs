@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Collections;
+using System.IO;
 //using System.Threading;
 
 namespace NetworkTest
@@ -38,11 +39,11 @@ namespace NetworkTest
             //Console.ReadKey();
             //return;
 
-            Logger.WriteToFile();
+            //Logger.WriteToFile();
             Logger.enable = true;
             //FileBasedCache.Clear();
             NetworkManager nm = new NetworkManager();
-            //obs = new DataObserver();
+            /*//obs = new DataObserver();
             vwc = new VWClient(new DataFactory(nm), nm);
             //ModelRunManager = new ModelRunManager(vwc);
             ModelRunManager.client = vwc;
@@ -54,9 +55,23 @@ namespace NetworkTest
             sp.model_run_uuid = "80661ff3-2d25-4ae3-867b-74896b97d3c6";
             sp.model_set_type = "";
             ModelRunManager.getAvailable(sp,Message: Recieved);
-            Thread.Sleep(5000);
-            
-            Logger.ReadKey();
+            */
+            StreamReader sr = new StreamReader("./testChase.csv");
+            string content = sr.ReadToEnd();
+            sr.Close();
+            Logger.WriteLine(content);
+
+            NetworkClient nc = new NetworkClient(nm);
+            nc.UploadStr("http://httpbin.org/post", content);
+            //Thread.Sleep(5000);
+            //System.Diagnostics.Process.Start("http://google.com");
+            Logger.WriteLine("DONE SLEEPING");
+            char stop = 'a';
+            while(stop != 'q')
+            {
+                stop = Console.ReadKey(true).KeyChar;
+                Logger.WriteLine(stop.ToString());
+            }
         }
 
         public static int i = 1;
