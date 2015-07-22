@@ -62,9 +62,9 @@ namespace NetworkTest
             Logger.WriteLine(content);
 
             NetworkClient nc = new NetworkClient(nm);
-            nc.UploadStr("http://httpbin.org/post", content);
+            nc.UploadStr("http://192.168.0.204:5000/visualization/CSV/3DVisualizationApplication", content);
             //Thread.Sleep(5000);
-            //System.Diagnostics.Process.Start("http://google.com");
+            System.Diagnostics.Process.Start("http://192.168.0.204:5000/visualization/CSV/3DApplicationResults/");
             Logger.WriteLine("DONE SLEEPING");
             char stop = 'a';
             while(stop != 'q')

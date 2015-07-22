@@ -189,9 +189,19 @@ public class NetworkClient : WebClient
 
 	protected override void OnUploadStringCompleted (UploadStringCompletedEventArgs e)
     {
-        Logger.WriteLine("UPLOAD COMPLETED");
-		base.OnUploadStringCompleted (e);
-        Logger.WriteLine("DATA: " + e.Result);
+        try
+        {
+            Logger.WriteLine("UPLOAD COMPLETED");
+            base.OnUploadStringCompleted(e);
+            Logger.WriteLine("DATA: " + e.Result);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter("./test.html");
+            sw.Write(e.Result);
+            sw.Close();
+        }
+        catch (Exception error)
+        {
+            Console.WriteLine(error.InnerException.Message);
+        }
 	}
     
     protected override void OnUploadProgressChanged(UploadProgressChangedEventArgs e)
