@@ -64,7 +64,9 @@ namespace NetworkTest
             NetworkClient nc = new NetworkClient(nm);
             nc.UploadStr("http://192.168.0.204:5000/visualization/CSV/3DVisualizationApplication", content);
             //Thread.Sleep(5000);
-            System.Diagnostics.Process.Start("http://192.168.0.204:5000/visualization/CSV/3DApplicationResults/");
+            //                                                                     Rui:     this is your csv file string first element before //, which is the name of the csv file. e.g. for testChase.csv, this part 
+            //                                                                              should be chase211.csv
+            System.Diagnostics.Process.Start("http://192.168.0.204:5000/visualization/CSV/chase211.csv/3DApplicationResults/");
             Logger.WriteLine("DONE SLEEPING");
             char stop = 'a';
             while(stop != 'q')
