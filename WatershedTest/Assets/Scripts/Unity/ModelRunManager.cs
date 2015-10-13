@@ -618,8 +618,20 @@ public static class ModelRunManager
             Logger.WriteLine("SUCCESSFUL ADD?: " + InsertDataRecord(dr, record).ToString());
 		}
 	}
-	// Filter function goes here.
-	static void filter(DataRecord record, List<DataRecord> allRecords)
+
+    private static void DownloadProgressCallback(object sender, System.Net.DownloadProgressChangedEventArgs e)
+    {
+        // Displays the operation identifier, and the transfer progress.
+        //Console.WriteLine("{0}    downloaded {1} of {2} bytes. {3} % complete...",
+        //    (string)e.UserState,
+        //    e.BytesReceived,
+        //    e.TotalBytesToReceive,
+        //    e.ProgressPercentage);
+        GlobalConfig.loading = true;
+    }
+
+    // Filter function goes here.
+    static void filter(DataRecord record, List<DataRecord> allRecords)
 	{
         Logger.WriteLine("FILTERING");
         // Add it to its perspective model run
@@ -631,93 +643,104 @@ public static class ModelRunManager
         {
             Debug.LogError("SERVICES: " + i);
         }
-
+        
         if(record.services.ContainsKey("nc"))
         {
             // Add it to its perspective model run
             record.band_id = 1;
-            Debug.LogError("NETCDF");
+            Debug.LogError("NC");
+            Debug.LogError("NETCDF" +record.services["nc"]);
+            if (!System.IO.Directory.Exists(@".\Downloads"))
+            {
+                System.IO.Directory.CreateDirectory(@".\Downloads");
+            }
             new Thread(() =>
             {
                 System.Net.WebClient wc = new System.Net.WebClient();
-                var data = wc.DownloadData(record.services["nc"]);
-                var ls = record.services["nc"].Split(new char[] { '/' },StringSplitOptions.RemoveEmptyEntries);
-                string filename = "./"+ls[ls.Length - 1];
+                
+                var ls = record.services["nc"].Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+                string filename = @".\Downloads\" + ls[ls.Length - 1];
                 Debug.LogError(filename);
                 if (!System.IO.File.Exists(filename))
                 {
+                    wc.DownloadProgressChanged += new System.Net.DownloadProgressChangedEventHandler(DownloadProgressCallback);
+                    var data = wc.DownloadData(record.services["nc"]);
+                    GlobalConfig.loading = false;
+                    Debug.LogError("FILENAME: " + filename);
                     var fdesc = System.IO.File.Create(filename);
                     fdesc.Write(data, 0, data.Length);
                     fdesc.Close();
+                    wc.Dispose();
+                }
+                string FileName = RasterDataset.GetGdalPath(filename);
+                RasterDataset modelData = new RasterDataset(FileName);
+                if (modelData.Open())
+                {
+                    // 
+                    //Debug.LogError("ITS ALIVE");
 
-                    string FileName = RasterDataset.GetGdalPath(filename);
-                    RasterDataset modelData = new RasterDataset(FileName);
-                    if (modelData.Open())
+
+
+                    // Get any subdatasets associate to this file
+                    List<string> subSets = modelData.GetSubDatasets();
+                    if (subSets.Count == 0)
                     {
-                        // 
-                        //Debug.LogError("ITS ALIVE");
+                        DateTime tempTime = new DateTime();
+                        TimeSpan tempSpan = new TimeSpan();
+                        DataRecord rec = new DataRecord(filename.ToString());
+                        rec.variableName = filename;//str.Contains("NETCDF") ? str.Replace(FileName + ":", "") : str;
+                        rec.name = rec.variableName;
+                        //rec.Data = rd.GetData();
+                        rec.modelname = rec.modelname;
+                        rec.modelRunUUID = rec.modelRunUUID;
+                        rec.id = Guid.NewGuid().ToString();
+                        rec.location = GlobalConfig.Location;
+                        rec.Temporal = modelData.IsTemporal();//(rec.Data.Count > 1);
+                        rec.Type = "DEM";
+                        modelData.GetTimes(out tempTime, out tempSpan);
+                        rec.start = tempTime;
+                        rec.end = tempTime + tempSpan;
+                        rec.bbox = modelData.GetBoundingBox();
+                        rec.projection = modelData.ReturnProjection();
+                        rec.numbands = modelData.GetRasterCount();
+                        rec.services["file"] = FileName.ToString();
+                        ModelRunManager.InsertDataRecord(rec, new List<DataRecord>());
+                    }
 
-
-
-                        // Get any subdatasets associate to this file
-                        List<string> subSets = modelData.GetSubDatasets();
-                        if (subSets.Count == 0)
+                    // Populate datarecords for each subdatasets
+                    foreach (String str in subSets)
+                    {
+                        Debug.LogError("PROCESSING THIS STR: " + str);
+                        RasterDataset rd = new RasterDataset(str);
+                        if (rd.Open())
                         {
+
                             DateTime tempTime = new DateTime();
                             TimeSpan tempSpan = new TimeSpan();
-                            DataRecord rec = new DataRecord(filename.ToString());
-                            rec.variableName = filename;//str.Contains("NETCDF") ? str.Replace(FileName + ":", "") : str;
+                            DataRecord rec = new DataRecord(str);
+                            rec.variableName = str.Contains("NETCDF") ? str.Replace(FileName + ":", "") : str;
                             rec.name = rec.variableName;
                             //rec.Data = rd.GetData();
-                            rec.modelname = rec.modelname;
-                            rec.modelRunUUID = rec.modelRunUUID;
+                            rec.modelname = record.modelname;
+                            rec.modelRunUUID = record.modelRunUUID;
                             rec.id = Guid.NewGuid().ToString();
                             rec.location = GlobalConfig.Location;
-                            rec.Temporal = modelData.IsTemporal();//(rec.Data.Count > 1);
+                            rec.Temporal = rd.IsTemporal();//(rec.Data.Count > 1);
                             rec.Type = "DEM";
-                            modelData.GetTimes(out tempTime, out tempSpan);
+                            rd.GetTimes(out tempTime, out tempSpan);
                             rec.start = tempTime;
                             rec.end = tempTime + tempSpan;
-                            rec.bbox = modelData.GetBoundingBox();
-                            rec.projection = modelData.ReturnProjection();
-                            rec.numbands = modelData.GetRasterCount();
-                            rec.services["file"] = FileName.ToString();
+                            rec.bbox = rd.GetBoundingBox();
+                            rec.projection = rd.ReturnProjection();
+                            rec.numbands = rd.GetRasterCount();
+                            rec.services["file"] = str;
                             ModelRunManager.InsertDataRecord(rec, new List<DataRecord>());
                         }
 
-                        // Populate datarecords for each subdatasets
-                        foreach (String str in subSets)
-                        {
-                            Debug.LogError("PROCESSING THIS STR: " + str);
-                            RasterDataset rd = new RasterDataset(str);
-                            if (rd.Open())
-                            {
-
-                                DateTime tempTime = new DateTime();
-                                TimeSpan tempSpan = new TimeSpan();
-                                DataRecord rec = new DataRecord(str);
-                                rec.variableName = str.Contains("NETCDF") ? str.Replace(FileName + ":", "") : str;
-                                rec.name = rec.variableName;
-                                //rec.Data = rd.GetData();
-                                rec.modelname = record.modelname;
-                                rec.modelRunUUID = record.modelRunUUID;
-                                rec.id = Guid.NewGuid().ToString();
-                                rec.location = GlobalConfig.Location;
-                                rec.Temporal = rd.IsTemporal();//(rec.Data.Count > 1);
-                                rec.Type = "DEM";
-                                rd.GetTimes(out tempTime, out tempSpan);
-                                rec.start = tempTime;
-                                rec.end = tempTime + tempSpan;
-                                rec.bbox = rd.GetBoundingBox();
-                                rec.projection = rd.ReturnProjection();
-                                rec.numbands = rd.GetRasterCount();
-                                rec.services["file"] = str;
-                                ModelRunManager.InsertDataRecord(rec, new List<DataRecord>());
-                            }
-
-                        }
                     }
                 }
+
             }).Start();
         }
         else if (record.services.Keys.Count >= 2 && record.multiLayered != null)

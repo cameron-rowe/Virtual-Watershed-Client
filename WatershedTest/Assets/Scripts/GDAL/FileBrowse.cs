@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-
+using System;
 public struct DirectoryStruct
 {
     public string Path;
@@ -19,7 +19,7 @@ public class FileBrowse : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        CurrentDirectory = "";
+        CurrentDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 	}
 	
 	// Update is called once per frame

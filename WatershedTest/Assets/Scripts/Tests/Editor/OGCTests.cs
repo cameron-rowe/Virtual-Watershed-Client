@@ -401,6 +401,49 @@ namespace OGC_Tests
             
         }
 
+
+        [Test]
+        public void NasaAsterGDEMTest()
+        {
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            Gdal.AllRegister();
+            var nc = Gdal.Open("<GDAL_WMS><Service name=\"TMS\"><ServerUrl>http://map1.vis.earthdata.nasa.gov/wmts-geo/ASTER_GDEM_Color_Index/default/EPSG4326_31m/${z}/${y}/${x}.png</ServerUrl></Service><DataWindow><UpperLeftX>-180.0</UpperLeftX><UpperLeftY>90</UpperLeftY><LowerRightX>396.0</LowerRightX><LowerRightY>-198</LowerRightY><TileLevel>8</TileLevel><TileCountX>2</TileCountX><TileCountY>1</TileCountY><YOrigin>top</YOrigin></DataWindow><Projection>EPSG:4326</Projection><BlockSizeX>512</BlockSizeX><BlockSizeY>512</BlockSizeY><BandsCount>3</BandsCount></GDAL_WMS>", Access.GA_ReadOnly);
+
+            if(nc != null)
+            {
+                Debug.LogError(nc.GetDriver().LongName);
+                Debug.LogError(nc.RasterCount);
+                Debug.LogError(nc.RasterXSize);
+                Debug.LogError(nc.RasterYSize);
+                var tiff = Gdal.GetDriverByName("GTiff");
+                int width = 512;
+                int height = 512;
+                byte[] test = new byte[width*height];
+                
+                
+                var ntif  = tiff.Create("out2.tif", width, height, 3, DataType.GDT_Byte, null);
+
+                int blockx = 1, blocky = 1;
+                nc.GetRasterBand(1).GetBlockSize(out blockx, out blocky);
+                Debug.LogError(blockx + " " +  blocky);
+                
+                
+                nc.GetRasterBand(1).ReadRaster(0, 0, nc.RasterXSize, nc.RasterYSize, test, width, height, 0, 0);
+                ntif.GetRasterBand(1).WriteRaster(0, 0, width, height, test, width, height, 0, 0);
+
+                nc.GetRasterBand(2).ReadRaster(0, 0, nc.RasterXSize, nc.RasterYSize, test, width, height, 0, 0);
+                ntif.GetRasterBand(2).WriteRaster(0, 0, width, height, test, width, height, 0, 0);
+
+                nc.GetRasterBand(3).ReadRaster(0, 0, nc.RasterXSize, nc.RasterYSize, test, width, height, 0, 0);
+                ntif.GetRasterBand(3).WriteRaster(0, 0, width, height, test, width, height, 0, 0);
+                
+                ntif.Dispose();
+                //nc.GetRasterBand(1).writ
+
+            }
+        }
+
+
         [Test]
         public void NetCDFTest()
         {

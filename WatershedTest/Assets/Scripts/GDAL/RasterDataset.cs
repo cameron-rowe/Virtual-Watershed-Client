@@ -101,7 +101,7 @@ public class RasterDataset
         string matched = "";
         foreach (var i in md)
         {
-            Debug.LogError(i);
+            //Debug.LogError(i);
             var match = Regex.Match(i, "time#.*=");
             if (match.Success && i.ToLower().Contains("since"))
             {
@@ -111,10 +111,10 @@ public class RasterDataset
             }
         }
 
-        Debug.LogError("SUBSTRING: " + substring + " " + matched);
+        //Debug.LogError("SUBSTRING: " + substring + " " + matched);
         if(matched == "")
         {
-            Debug.LogError("FAILING");
+            //Debug.LogError("FAILING");
             return;
         }
 
@@ -266,8 +266,8 @@ public class RasterDataset
             }
         }
 
-        Debug.LogError(dataset.GetProjection());
-        Debug.LogError("BOUNDING BOX: " + minx + " " + maxy);
+        //Debug.LogError(dataset.GetProjection());
+        //Debug.LogError("BOUNDING BOX: " + minx + " " + maxy);
         
         
        
@@ -276,7 +276,7 @@ public class RasterDataset
         OSGeo.OSR.CoordinateTransformation ct = new OSGeo.OSR.CoordinateTransformation(sr1, sr2);
         double[] upperleft = new double[] {minx,maxy};
         double[] lowerright = new double[] {maxx,miny};
-        Debug.LogError(upperleft[0] + " " + upperleft[1]);
+        //Debug.LogError(upperleft[0] + " " + upperleft[1]);
         ct.TransformPoint(lowerright); 
         ct.TransformPoint(upperleft);
 
@@ -314,6 +314,7 @@ public class RasterDataset
 
     public bool IsTemporal()
     {
+        Debug.LogError(dataset.RasterCount );
         return dataset.RasterCount > 1;
     }
 }
