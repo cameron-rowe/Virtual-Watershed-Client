@@ -357,9 +357,7 @@ public class ModelRunComparisons : MonoBehaviour {
         VariableReference.AddDescription("Delta_" + selectedRow[0][2].ToString() + "_" + selectedRow[1][2].ToString(), "Delta " + selectedRow[0][2].ToString() + " minus " + selectedRow[1][2].ToString());
         spool.SetupForDelta("Delta " + selectedRow[0][2].ToString() + " minus " + selectedRow[1][2].ToString(), "Delta_" + selectedRow[0][2].ToString() + "_" + selectedRow[1][2].ToString(), Math.Min(OneTotal, TwoTotal), modelRuns[1].ModelRunUUID + modelRuns[0].ModelRunUUID);
         float NoData = float.MaxValue;
-        float NoDataAssignment = Math.Min(OneMin, TwoMin) - Math.Max(OneMax, TwoMax);
         Debug.LogError("The values: " + OneMax + ", " + OneMin + ", " + TwoMax + ", " + TwoMin);
-        Debug.LogError("The No data value is: " + NoDataAssignment);
 
         foreach(var i in DataSetOne[0].Data)
         {
@@ -416,9 +414,9 @@ public class ModelRunComparisons : MonoBehaviour {
                             insert.Min = insert.Data[0][i, j];
                         }
 
-                        if (DataSetOne[k].Data[i, j] == NoData && DataSetTwo[k].Data[i, j] == NoData)
+                        if (DataSetOne[k].Data[i, j] == float.MinValue || DataSetTwo[k].Data[i, j] == float.MinValue)
                         {
-                            insert.Data[0][i, j] = NoDataAssignment;
+                            insert.Data[0][i, j] = float.MinValue;
                         }
                     }
                 }

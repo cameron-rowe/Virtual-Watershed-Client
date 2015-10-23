@@ -206,7 +206,7 @@ public class Spooler : MonoBehaviour
                 textureBuilder(record);
 
                 // Updates the max information across the necessary classes
-                if(record.Max > modelrun.MinMax[oldSelectedVariable].y)
+                if(record.Max > modelrun.MinMax[oldSelectedVariable].y && record.Max != GlobalConfig.NewNoData)
                 {
                     float max = record.Max;
                     modelrun.MinMax[oldSelectedVariable] = new SerialVector2(new Vector2(modelrun.MinMax[oldSelectedVariable].x, max)); 
@@ -217,7 +217,7 @@ public class Spooler : MonoBehaviour
                     colorPicker.frameCount = modelrun.GetVariable(oldSelectedVariable).frameCount;
                     trendGraph.SetMax((int)max);
                 }
-                if(record.Min < modelrun.MinMax[oldSelectedVariable].x)
+                if(record.Min < modelrun.MinMax[oldSelectedVariable].x && record.Min != GlobalConfig.NewNoData)
                 {
                     float min = record.Min;
                     modelrun.MinMax[oldSelectedVariable] = new SerialVector2(new Vector2(min, modelrun.MinMax[oldSelectedVariable].y));

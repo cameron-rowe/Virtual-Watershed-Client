@@ -190,16 +190,37 @@ public class RasterDataset
                 for (int j = 0; j < height; j++)
                 {
                     Data[k, j] = DataF[(k) * height + height-1-j];
+                    
+                    if(Data[k, j] == GlobalConfig.Nodata)
+                    {
+                        Data[k, j] = GlobalConfig.NewNoData; //float.MinValue;
+                        /*
+                        if(CheckNoDataAssignment(Data, k, j, height, width))
+                        {
+                            Data[k, j] = float.MinValue;
+                        }       
+                        */
+                    }
+                    
                 }
-            }
-
-
-
+            }            
             data.Add(Data);
-
         }
         Console.WriteLine(dataset.RasterCount);
         return data;
+    }
+
+    private bool CheckNoDataAssignment(float [,] Data, int k, int j, int height, int width)
+    {
+        if(k != 0 || j != 0)
+        {
+            if (Data[k+1, j] != GlobalConfig.Nodata && Data[k, j + 1] != GlobalConfig.Nodata && Data[k - 1, j] != GlobalConfig.Nodata && Data[k, j - 1] != GlobalConfig.Nodata)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static string GetGdalPath(string path)

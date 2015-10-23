@@ -925,12 +925,12 @@ public static class Utilities
    			{
    				colorData[(width-i-1)*height+(height-j-1)] = Utilities.floatToColor32(data[i,j]);
                 total += data[i, j];
-                if(data[i,j] > max)
+                if(data[i, j] != GlobalConfig.NewNoData && data[i,j] > max)
                 {
                     max = data[i,j];
                     //Debug.LogError(data[i, j]);
                 }
-                if(data[i,j] < min)
+                if(data[i, j] != GlobalConfig.NewNoData && data[i,j] < min)
                 {
                     min = data[i,j];
                     //Debug.LogError(data[i, j]);

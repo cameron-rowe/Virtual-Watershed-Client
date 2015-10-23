@@ -31,6 +31,10 @@ public static class GlobalConfig
     public static int GlobalProjection = 26911;
     public static Rect BoundingBox = new Rect(565889.360f, 4844940.560f, 569986.360f - 565889.360f, 4844940.560f - 4840843.560f);
 
+    // Used as a current way to specify a no data value
+    public static float Nodata = 0;
+    public static float NewNoData = -9999;
+
     // Setting localzone for the CoordSystem
     public static int Zone
     {
