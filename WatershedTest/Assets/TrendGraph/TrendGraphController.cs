@@ -513,7 +513,8 @@ namespace VTL.TrendGraph
             float normHeight = 0;
             if (record.Data != null)
             {
-                normHeight = Mathf.Clamp01((record.Data[Row, Col] - yMin) / (yMax - yMin));
+                float data = record.Data[Row, Col] == -9999 ? 0 : record.Data[Row, Col];
+                normHeight = Mathf.Clamp01((data - yMin) / (yMax - yMin));
             }
             //float normHeight = Mathf.Clamp01((record.value - yMin) / (yMax - yMin));
             return new Vector2(w * normTime,

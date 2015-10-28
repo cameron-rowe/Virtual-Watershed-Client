@@ -942,7 +942,7 @@ public static class Utilities
         mean = total / (height * width);
         
         tex.wrapMode = TextureWrapMode.Clamp;
-        //tex.filterMode = FilterMode.Point;
+        tex.filterMode = FilterMode.Point;
    		tex.SetPixels32(colorData);
    		tex.Apply();
    		return tex;

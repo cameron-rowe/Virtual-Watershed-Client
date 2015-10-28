@@ -65,6 +65,7 @@ public class Spooler : MonoBehaviour
     string oldSelectedVariable;
     private int textureIndex = 0;
     int prevTextureIndex = 0;
+    FilterMode filter = FilterMode.Point;
 
 	/// <summary>
 	/// Used to determine the order the frames are in.
@@ -252,8 +253,8 @@ public class Spooler : MonoBehaviour
 				// Debug.LogError("CONTAINS " + CheckPoint + " Width: " + BoundingBox.width + " Height: " +  BoundingBox.height);
                 NormalizedPoint = TerrainUtils.NormalizePointToTerrain(WorldPoint, BoundingBox);
                 trendGraph.SetCoordPoint(WorldPoint);
-                int x = (int)Math.Min(Math.Round(Reel[textureIndex].Data.GetLength(0) * NormalizedPoint.x), (double)Reel[textureIndex].Data.GetLength(0) - 1);
-                int y = (int)Math.Min(Math.Round(Reel[textureIndex].Data.GetLength(1) * NormalizedPoint.y), (double)Reel[textureIndex].Data.GetLength(1) - 1);
+                int x = (int)Math.Min(Math.Floor(Reel[textureIndex].Data.GetLength(0) * NormalizedPoint.x), (double)Reel[textureIndex].Data.GetLength(0) - 1);
+                int y = (int)Math.Min(Math.Floor(Reel[textureIndex].Data.GetLength(1) * NormalizedPoint.y), (double)Reel[textureIndex].Data.GetLength(1) - 1);
                 
                 trendGraph.SetPosition(Reel[textureIndex].Data.GetLength(1) - 1 - y, Reel[textureIndex].Data.GetLength(0) - 1 - x);
 			}
@@ -265,6 +266,17 @@ public class Spooler : MonoBehaviour
             Debug.LogError("The count / total: " + Reel.Count + " / " + TOTAL);
             trendGraph.SetPosition(50, 50);
             // trendGraph.PresetData();
+        }
+        if(Input.GetKeyDown(KeyCode.K))
+        {
+            if(filter == FilterMode.Bilinear)
+            {
+                filter = FilterMode.Point;
+            }
+            else
+            {
+                filter = FilterMode.Bilinear;
+            }
         }
     }
 
@@ -632,7 +644,8 @@ public class Spooler : MonoBehaviour
 				// Set both textures to last reel texture
 				TimeProjector.material.SetTexture("_ShadowTex",Reel[Reel.Count-1].Picture.texture);
 				TimeProjector.material.SetTexture("_ShadowTex2",Reel[Reel.Count-1].Picture.texture);
-
+                Reel[Reel.Count - 1].Picture.texture.filterMode = filter;
+                Reel[Reel.Count - 1].Picture.texture.filterMode = filter;
                 testImage.material.SetTexture("_MainTex", Reel[Reel.Count - 1].Picture.texture);
                 testImage.material.SetTexture("_MainTex2", Reel[Reel.Count - 1].Picture.texture);
 			}
@@ -641,9 +654,12 @@ public class Spooler : MonoBehaviour
 				//Debug.LogError("Reeling");
 				// Set current texture
 				TimeProjector.material.SetTexture("_ShadowTex",Reel[textureIndex].Picture.texture);
-				
-				// Set future texture
-				TimeProjector.material.SetTexture("_ShadowTex2",Reel[textureIndex+1].Picture.texture);
+
+                Reel[textureIndex].Picture.texture.filterMode = filter;
+                Reel[textureIndex + 1].Picture.texture.filterMode = filter;
+
+                // Set future texture
+                TimeProjector.material.SetTexture("_ShadowTex2",Reel[textureIndex+1].Picture.texture);
                 testImage.material.SetTexture("_MainTex", Reel[textureIndex].Picture.texture);
                 testImage.material.SetTexture("_MainTex2", Reel[textureIndex + 1].Picture.texture);
 			}

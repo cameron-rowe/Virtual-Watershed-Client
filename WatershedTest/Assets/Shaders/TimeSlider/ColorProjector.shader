@@ -351,6 +351,10 @@ float4 frag (vertexInput i) : SV_Target
 	return float4(0,0,0,0);
 	} 
 	
+	if (Y <= -9999 || Y2 <= -9999)
+	{
+		return float4(0, 0, 0, 1);
+	}
 
 	Y = Normalize(Y);
 	Y2 = Normalize(Y2);
@@ -363,10 +367,6 @@ float4 frag (vertexInput i) : SV_Target
 	_Blend = 0.5;
 
 
-	if(Y <= 0.00 )
-	{
-	  return float4(0,0,0,1);
-	}
 		
 	float4 colour, colour2;
 
