@@ -517,8 +517,7 @@ namespace VTL.TrendGraph
                 normHeight = Mathf.Clamp01((data - yMin) / (yMax - yMin));
             }
             //float normHeight = Mathf.Clamp01((record.value - yMin) / (yMax - yMin));
-            return new Vector2(w * normTime,
-                               h * (1 - normHeight) - 1);
+            return new Vector2(w * normTime, h * (1 - normHeight) - 1);
         }
 
         /// <summary>
@@ -642,7 +641,8 @@ namespace VTL.TrendGraph
                 file.WriteLine("UTM Zone: " + coordsystem.localzone);
                 foreach (var i in timeseries)
                 {
-                    file.Write(i.Data[Row, Col] + ", ");
+                    float data = i.Data[Row, Col] == -9999 ? 0 : i.Data[Row, Col];
+                    file.Write(data + ", ");
                 }
             }
         }
