@@ -26,28 +26,11 @@ public class toggleScripts : MonoBehaviour
     {
         if (Input.GetKeyDown("r"))
         {
-            if (noClip)
-            {
-                swapToFPS();
-            }
-            else
-            {
-                swapToNoClip();
-            }
-            noClip = !noClip;
+            toggleFlight();
         }
         else if (Input.GetKeyDown("f"))
         {
-            if (faster)
-            {
-                slowDown();
-            }
-            else
-            {
-                speedUp();
-            }
-            faster = !faster;
-            
+            toggleFaster();
         }
         //if (Input.GetMouseButtonDown(1))
         //{
@@ -103,5 +86,30 @@ public class toggleScripts : MonoBehaviour
     {
         player.GetComponent<Camera>().enabled = !(player.GetComponent<Camera>().enabled);
     }
-   
+
+    public void toggleFlight()
+    {
+        if (noClip)
+        {
+            swapToFPS();
+        }
+        else
+        {
+            swapToNoClip();
+        }
+        noClip = !noClip;
+    }
+
+    public void toggleFaster()
+    {
+        if (faster)
+        {
+            slowDown();
+        }
+        else
+        {
+            speedUp();
+        }
+        faster = !faster;
+    }
 }

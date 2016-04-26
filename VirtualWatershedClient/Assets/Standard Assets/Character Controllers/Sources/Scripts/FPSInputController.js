@@ -1,4 +1,5 @@
 private var motor : CharacterMotor;
+private var jumpEvent : boolean;
 
 // Use this for initialization
 function Awake () {
@@ -29,7 +30,13 @@ function Update () {
 	
 	// Apply the direction to the CharacterMotor
 	motor.inputMoveDirection = transform.rotation * directionVector;
-	motor.inputJump = Input.GetButton("Jump");
+	motor.inputJump = Input.GetButton("Jump") || jumpEvent;
+
+	jumpEvent = false;
+}
+
+public function Jump() {
+    jumpEvent = true;
 }
 
 // Require a character controller to be attached to the same game object
