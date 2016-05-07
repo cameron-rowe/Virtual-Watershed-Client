@@ -10,7 +10,7 @@ public class cameraZoom : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+        cam.transform.Rotate(0, 90, 0);
 	}
 	
 	// Update is called once per frame
