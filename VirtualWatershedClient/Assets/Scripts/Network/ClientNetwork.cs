@@ -14,7 +14,7 @@ public class ClientNetwork : MonoBehaviour
     {
         if (Network.peerType == NetworkPeerType.Disconnected)
         {
-            if (GUI.Button(new Rect(100, 100, 150, 25), "Connect"))
+            if (GUI.Button(new Rect(80, 75, 100, 25), "Connect"))
             {
                 Network.Connect(serverIP, port);
             }
@@ -23,25 +23,37 @@ public class ClientNetwork : MonoBehaviour
         {
             if (Network.peerType == NetworkPeerType.Client)
             {
-                if (GUI.Button(new Rect(100, 125, 150, 25), "Logut"))
+                if (GUI.Button(new Rect(80, 90, 100, 25), "Logut"))
                     Network.Disconnect();
 
-                if (GUI.Button(new Rect(100, 150, 150, 25), "SendHello to server"))
+                if (GUI.Button(new Rect(80, 115, 100, 25), "Jump"))
                 {
                     player.GetComponent<FPSInputController>().Jump();
-                    SendInfoToServer();
+                    ClientToServerJump();
+                }
+                if (GUI.Button(new Rect(80, 140, 100, 25), "Fly"))
+                {
+                    player.GetComponent<toggleScripts>().toggleFlight();
+                    ClientToServerFly();
                 }
             }
         }
 
-        GUI.TextArea(new Rect(250, 100, 300, 300), _messageLog);
+        //GUI.TextArea(new Rect(250, 100, 300, 300), _messageLog);
     }
 
     [RPC]
-    void SendInfoToServer()
+    void ClientToServerJump()
     {
-        someInfo = "Client " + _myNetworkPlayer.guid + ": hello server";
-        GetComponent<NetworkView>().RPC("ReceiveInfoFromClient", RPCMode.Server, someInfo);
+        someInfo = "Client " + _myNetworkPlayer.guid + ": Jump";
+        GetComponent<NetworkView>().RPC("ReceiveFromClientJump", RPCMode.Server, someInfo);
+
+    }
+    [RPC]
+    void ClientToServerFly()
+    {
+        someInfo = "Client " + _myNetworkPlayer.guid + ": Fly";
+        GetComponent<NetworkView>().RPC("ReceiveFromClientFly", RPCMode.Server, someInfo);
 
     }
     [RPC]
@@ -49,28 +61,40 @@ public class ClientNetwork : MonoBehaviour
     {
         _myNetworkPlayer = player;
         someInfo = "Player setted";
-        GetComponent<NetworkView>().RPC("ReceiveInfoFromClient", RPCMode.Server, someInfo);
+        GetComponent<NetworkView>().RPC("ReceiveFromClientJump", RPCMode.Server, someInfo);
     }
 
     [RPC]
-    void ReceiveInfoFromServer(string someInfo)
+    void ReceiveFromServerJump(string someInfo)
     {
         _messageLog += someInfo + "\n";
+        Debug.Log(_messageLog);
         player.GetComponent<FPSInputController>().Jump();
+    }
+    [RPC]
+    void ReceiveFromServerFly(string someInfo)
+    {
+        _messageLog += someInfo + "\n";
+        Debug.Log(_messageLog);
+        player.GetComponent<toggleScripts>().toggleFlight();
     }
 
     void OnConnectedToServer()
     {
         _messageLog += "Connected to server" + "\n";
+        Debug.Log(_messageLog);
     }
     void OnDisconnectedToServer()
     {
         _messageLog += "Disco from server" + "\n";
+        Debug.Log(_messageLog);
     }
 
     // fix RPC errors
     [RPC]
-    void ReceiveInfoFromClient(string someInfo) { }
+    void ReceiveFromClientJump(string someInfo) { }
     [RPC]
-    void SendInfoToClient(string someInfo) { }
+    void ReceiveFromClientFly(string someInfo) { }
+    [RPC]
+    void SendToClientJump(string someInfo) { }
 }
