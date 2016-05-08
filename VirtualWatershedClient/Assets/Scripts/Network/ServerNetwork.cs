@@ -69,6 +69,64 @@ public class ServerNetwork : MonoBehaviour {
         player.GetComponent<toggleScripts>().toggleFlight();
     }
 
+    [RPC]
+    void ReceiveFromClientForward(string someInfo)
+    {
+        _messageLog += someInfo + "\n";
+        Debug.Log(_messageLog);
+        //player.GetComponent<FPSInputController>().MoveForward();
+    }
+
+    [RPC]
+    void ReceiveFromClientBackward(string someInfo)
+    {
+        _messageLog += someInfo + "\n";
+        Debug.Log(_messageLog);
+       // player.GetComponent<FPSInputController>().MoveBackward();
+    }
+
+    [RPC]
+    void ReceiveFromClientForwardBackwardStop(string someInfo)
+    {
+        _messageLog += someInfo + "\n";
+        Debug.Log(_messageLog);
+       // player.GetComponent<FPSInputController>().ResetForwardBackwardMovement();
+    }
+
+    [RPC]
+    void ReceiveFromClientLeft(string someInfo)
+    {
+        _messageLog += someInfo + "\n";
+        Debug.Log(_messageLog);
+        //player.GetComponent<FPSInputController>().MoveLeft();
+    }
+
+    [RPC]
+    void ReceiveFromClientRight(string someInfo)
+    {
+        _messageLog += someInfo + "\n";
+        Debug.Log(_messageLog);
+        //player.GetComponent<FPSInputController>().MoveRight();
+    }
+
+    [RPC]
+    void ReceiveFromClientLeftRightStop(string someInfo)
+    {
+        _messageLog += someInfo + "\n";
+        Debug.Log(_messageLog);
+        //player.GetComponent<FPSInputController>().ResetLeftRightMovement();
+    }
+
+    [RPC]
+    void ReceiveFromClientCamera(string someInfo, Vector3 cameraPos, Quaternion cameraRot)
+    {
+        _messageLog += someInfo + "\n";
+        Debug.Log(_messageLog);
+        player.transform.position = cameraPos;
+        player.transform.rotation = cameraRot;
+        player.transform.Rotate(new Vector3(0, 90, 0));
+    }
+
     string someInfo = "Server: hello client";
     [RPC]
     void SendToClientJump()
@@ -83,13 +141,27 @@ public class ServerNetwork : MonoBehaviour {
 
     // fix RPC errors
     [RPC]
-    void ClientToServerJump() { }
+    public void ClientToServerJump() { }
     [RPC]
-    void ClientToServerFly() { }
+    public void ClientToServerFly() { }
     [RPC]
     void SetPlayerInfo(NetworkPlayer player) { }
     [RPC]
     void ReceiveFromServerJump(string someInfo) { }
     [RPC]
     void ReceiveFromServerFly(string someInfo) { }
+    [RPC]
+    public void ClientToServerForward() { }
+    [RPC]
+    public void ClientToServerBackward() { }
+    [RPC]
+    public void ClientToServerForwardBackwardStop() { }
+    [RPC]
+    public void ClientToServerLeft() { }
+    [RPC]
+    public void ClientToServerRight() { }
+    [RPC]
+    public void ClientToServerLeftRightStop() { }
+    [RPC]
+    public void ClientToServerCamera() { }
 }

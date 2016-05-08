@@ -1,5 +1,7 @@
 private var motor : CharacterMotor;
 private var jumpEvent : boolean;
+private var forwardMove : int;
+private var sideMove : int;
 
 // Use this for initialization
 function Awake () {
@@ -8,8 +10,10 @@ function Awake () {
 
 // Update is called once per frame
 function Update () {
-	// Get the input vector from keyboard or analog stick
-	var directionVector = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+    // Get the input vector from keyboard or analog stick
+    var z = (forwardMove == 1 || forwardMove == -1) ? forwardMove : Input.GetAxis("Vertical");
+    var x = (sideMove == 1 || sideMove == -1) ? sideMove : Input.GetAxis("Horizontal");
+	var directionVector = new Vector3(x, 0, z);
 	
 	if (directionVector != Vector3.zero) {
 		// Get the length of the directon vector and then normalize it
@@ -33,10 +37,36 @@ function Update () {
 	motor.inputJump = Input.GetButton("Jump") || jumpEvent;
 
 	jumpEvent = false;
+	//forwardMove = 0;
+	//sideMove = 0;
 }
 
 public function Jump() {
     jumpEvent = true;
+}
+
+public function MoveForward() {
+    forwardMove = 1;
+}
+
+public function MoveBackward() {
+    forwardMove = -1;
+}
+
+public function MoveLeft() {
+    sideMove = -1;
+}
+
+public function MoveRight() {
+    sideMove = 1;
+}
+
+public function ResetLeftRightMovement() {
+    sideMove = 0;
+}
+
+public function ResetForwardBackwardMovement() {
+    forwardMove = 0;
 }
 
 // Require a character controller to be attached to the same game object
