@@ -25,7 +25,7 @@ public class ClientNetwork : MonoBehaviour
             {
                 if (GUI.Button(new Rect(80, 90, 100, 25), "Logut"))
                     Network.Disconnect();
-
+/*
                 if (GUI.Button(new Rect(80, 115, 100, 25), "Jump"))
                 {
                     player.GetComponent<FPSInputController>().Jump();
@@ -36,21 +36,33 @@ public class ClientNetwork : MonoBehaviour
                     player.GetComponent<toggleScripts>().toggleFlight();
                     ClientToServerFly();
                 }
+*/
             }
         }
 
         //GUI.TextArea(new Rect(250, 100, 300, 300), _messageLog);
     }
 
+    private float updateDT = 0f;
+    void Update()
+    {
+        updateDT += Time.deltaTime;
+        if (Network.peerType == NetworkPeerType.Client  && updateDT > 0.05f )
+        {
+            ClientToServerCamera();
+            updateDT = 0f;
+        }
+    }
+
     [RPC]
-    void ClientToServerJump()
+    public void ClientToServerJump()
     {
         someInfo = "Client " + _myNetworkPlayer.guid + ": Jump";
         GetComponent<NetworkView>().RPC("ReceiveFromClientJump", RPCMode.Server, someInfo);
 
     }
     [RPC]
-    void ClientToServerFly()
+    public void ClientToServerFly()
     {
         someInfo = "Client " + _myNetworkPlayer.guid + ": Fly";
         GetComponent<NetworkView>().RPC("ReceiveFromClientFly", RPCMode.Server, someInfo);
@@ -90,6 +102,54 @@ public class ClientNetwork : MonoBehaviour
         Debug.Log(_messageLog);
     }
 
+    [RPC]
+    public void ClientToServerForward()
+    {
+        someInfo = "Client " + _myNetworkPlayer.guid + ": Forward";
+        GetComponent<NetworkView>().RPC("ReceiveFromClientForward", RPCMode.Server, someInfo);
+    }
+
+    [RPC]
+    public void ClientToServerBackward()
+    {
+        someInfo = "Client " + _myNetworkPlayer.guid + ": Backward";
+        GetComponent<NetworkView>().RPC("ReceiveFromClientBackward", RPCMode.Server, someInfo);
+    }
+
+    [RPC]
+    public void ClientToServerForwardBackwardStop()
+    {
+        someInfo = "Client " + _myNetworkPlayer.guid + ": ForwardBackwardStop";
+        GetComponent<NetworkView>().RPC("ReceiveFromClientForwardBackwardStop", RPCMode.Server, someInfo);
+    }
+
+    [RPC]
+    public void ClientToServerLeft()
+    {
+        someInfo = "Client " + _myNetworkPlayer.guid + ": Left";
+        GetComponent<NetworkView>().RPC("ReceiveFromClientLeft", RPCMode.Server, someInfo);
+    }
+
+    [RPC]
+    public void ClientToServerRight()
+    {
+        someInfo = "Client " + _myNetworkPlayer.guid + ": Right";
+        GetComponent<NetworkView>().RPC("ReceiveFromClientRight", RPCMode.Server, someInfo);
+    }
+
+    [RPC]
+    public void ClientToServerLeftRightStop()
+    {
+        someInfo = "Client " + _myNetworkPlayer.guid + ": LeftRightStop";
+        GetComponent<NetworkView>().RPC("ReceiveFromClientLeftRightStop", RPCMode.Server, someInfo);
+    }
+
+    [RPC]
+    public void ClientToServerCamera()
+    {
+        someInfo = "Client " + _myNetworkPlayer.guid + ": Camera";
+        GetComponent<NetworkView>().RPC("ReceiveFromClientCamera", RPCMode.Server, someInfo, player.transform.position, player.transform.rotation);
+    }
     // fix RPC errors
     [RPC]
     void ReceiveFromClientJump(string someInfo) { }
@@ -97,4 +157,18 @@ public class ClientNetwork : MonoBehaviour
     void ReceiveFromClientFly(string someInfo) { }
     [RPC]
     void SendToClientJump(string someInfo) { }
+    [RPC]
+    void ReceiveFromClientForward(string someInfo) { }
+    [RPC]
+    void ReceiveFromClientBackward(string someInfo) { }
+    [RPC]
+    void ReceiveFromClientForwardBackwardStop(string someInfo) { }
+    [RPC]
+    void ReceiveFromClientLeft(string someInfo) { }
+    [RPC]
+    void ReceiveFromClientRight(string someInfo) { }
+    [RPC]
+    void ReceiveFromClientLeftRightStop(string someInfo) { }
+    [RPC]
+    void ReceiveFromClientCamera(string someInfo, Vector3 cameraPos, Quaternion cameraRot) { }
 }
