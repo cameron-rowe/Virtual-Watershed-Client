@@ -40,7 +40,7 @@ public class ClientNetwork : MonoBehaviour
             }
         }
 
-        //GUI.TextArea(new Rect(250, 100, 300, 300), _messageLog);
+        GUI.TextArea(new Rect(650, 170, 300, 100), _messageLog);
     }
 
     private float updateDT = 0f;
@@ -52,6 +52,12 @@ public class ClientNetwork : MonoBehaviour
             ClientToServerCamera();
             updateDT = 0f;
         }
+    }
+
+    public void showStick()
+    {
+        // i tried to trigger mouse middle key pressed
+        _messageLog = _messageLog + "current elevation is: " + player.transform.position.y + "\n";
     }
 
     [RPC]

@@ -36,6 +36,11 @@ public class Marker : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        markerFunction();
+    }
+
+    void markerFunction()
+    {
         // Get the new cursor positions
         cursorPos = mouseray.UpdateCursor();
 
@@ -68,11 +73,11 @@ public class Marker : MonoBehaviour {
             }
 
             // Update the markser positions
-            if(marker1Active)
+            if (marker1Active)
             {
                 marker1.transform.position = new Vector3(cursorPos.x, cursorPos.y - 10.0f, cursorPos.z);
             }
-            else if(marker2Active)
+            else if (marker2Active)
             {
                 marker2.transform.position = new Vector3(cursorPos.x, cursorPos.y - 10.0f, cursorPos.z);
             }
@@ -123,7 +128,7 @@ public class Marker : MonoBehaviour {
             coordsystem.transformToUnity(cursorPos);
         }
 
-        
+
         cursorPos.y = -10000;
         ResizeObjects(cursor);
         ResizeUniformObjects(marker1);
